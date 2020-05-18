@@ -1,10 +1,10 @@
 import * as Note from '../model/note.js'
 
 export function list(req, res) {
-	let { sort = 'desc' } = req.query
-	const validSorts = new Set(['desc', 'asc'])
-	if (!validSorts.has(sort.toLowerCase())) {
-		return res.status(400).send('Invalid sort params')
+	let { sort } = req.query
+	sort = sort ? sort.toLowerCase() : 'desc'
+	if (!(sort === 'asc' || sort === 'desc')) {
+		return res.status(400).send('Invalid sort Params')
 	}
 	const notes = Note.getNotes(sort)
 	res.json({ notes })
@@ -21,6 +21,7 @@ export async function create(req, res) {
 }
 
 export function read(req, res) {
+	// notes/:id
 	const { id } = req.params
 	const note = Note.getNote(id)
 	res.json({ note })
@@ -34,12 +35,12 @@ export async function update(req, res) {
 	}
 	const note = await Note.updateNote(id, { title, body })
 	console.log({ note })
-	res.send('update')
+	res.send('ok')
 }
 
-export function deleteNote(req, res) {
+export async function deleteNote(req, res) {
 	const { id } = req.params
-	const success = Note.deleteNote(id)
+	const success = await Note.deleteNote(id)
 	console.log(`deleting ${id}`, success)
-	res.send('delete')
+	res.send('ok')
 }
